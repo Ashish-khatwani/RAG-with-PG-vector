@@ -178,7 +178,7 @@ class DocumentRepository:
             file_type=row["file_type"],
             content_hash=row["content_hash"],
             raw_text=row["raw_text"],
-            metadata=dict(row["metadata"]),
+            metadata=DocumentRepository._normalize_metadata(row["metadata"]),
             upload_timestamp=row["upload_timestamp"],
             updated_timestamp=row["updated_timestamp"],
         )
@@ -190,7 +190,7 @@ class DocumentRepository:
         vector_key: str | None = None,
         keyword_key: str | None = None,
     ) -> RetrievedChunk:
-        metadata = dict(row["metadata"])
+        metadata = DocumentRepository._normalize_metadata(row["metadata"])
         metadata.setdefault("file_name", row["file_name"])
         metadata.setdefault("file_type", row["file_type"])
         metadata.setdefault("upload_timestamp", row["upload_timestamp"])
@@ -206,3 +206,17 @@ class DocumentRepository:
             vector_score=float(row[vector_key]) if vector_key and row[vector_key] is not None else None,
             keyword_score=float(row[keyword_key]) if keyword_key and row[keyword_key] is not None else None,
         )
+
+    @staticmethod
+    def _normalize_metadata(value: Any) -> dict[str, Any]:
+        if value is None:
+            return {}
+        if isinstance(value, dict):
+            return value
+        if isinstance(value, str):
+            loaded = json.loads(value)
+            return loaded if isinstance(loaded, dict) else {}
+        try:
+            return dict(value)
+        except (TypeError, ValueError):
+            return {}

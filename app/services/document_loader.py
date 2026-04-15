@@ -4,6 +4,7 @@ import asyncio
 from pathlib import Path
 
 import fitz
+from pymupdf import FileDataError
 
 from app.core.exceptions import UnsupportedFileTypeError, ValidationError
 from app.models.domain import DocumentContent
@@ -18,6 +19,8 @@ class DocumentLoader:
             raise UnsupportedFileTypeError(
                 f"Unsupported file type '{suffix or 'unknown'}' for file '{file_name}'."
             )
+        if not content:
+            raise ValidationError(f"Uploaded file '{file_name}' is empty.")
         if suffix == ".pdf":
             text = await asyncio.to_thread(self._extract_pdf_text, content)
         else:
@@ -33,7 +36,12 @@ class DocumentLoader:
 
     @staticmethod
     def _extract_pdf_text(content: bytes) -> str:
-        document = fitz.open(stream=content, filetype="pdf")
+        if not content.lstrip().startswith(b"%PDF"):
+            raise ValidationError("Uploaded file is not a valid PDF document.")
+        try:
+            document = fitz.open(stream=content, filetype="pdf")
+        except (FileDataError, RuntimeError, ValueError) as exc:
+            raise ValidationError("Uploaded file is not a valid PDF document.") from exc
         try:
             return "\n".join(page.get_text("text") for page in document)
         finally:
