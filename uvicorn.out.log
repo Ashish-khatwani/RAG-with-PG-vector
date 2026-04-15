@@ -1,0 +1,4 @@
+{"timestamp": "2026-04-15T18:55:52.424369+00:00", "level": "INFO", "logger": "sentence_transformers.SentenceTransformer", "message": "Use pytorch device_name: cpu", "taskName": null}
+{"timestamp": "2026-04-15T18:55:52.424948+00:00", "level": "INFO", "logger": "sentence_transformers.SentenceTransformer", "message": "Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2", "taskName": null}
+{"timestamp": "2026-04-15T18:55:52.710012+00:00", "level": "INFO", "logger": "sentence_transformers.cross_encoder.CrossEncoder", "message": "Use pytorch device: cpu", "taskName": null}
+{"timestamp": "2026-04-15T18:55:52.914306+00:00", "level": "INFO", "logger": "app.main", "message": "Application startup complete", "taskName": "Task-2", "app_name": "Document Intelligence Engine"}
